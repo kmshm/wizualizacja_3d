@@ -11,6 +11,8 @@ Uruchomienie:
     python wizualizacja_3d.py
 """
 
+import glob
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -65,18 +67,18 @@ CROSS_SECTION = [
 
 # Czujniki światłowodowe
 # Dla każdego czujnika podaj:
-#   file   – ścieżka do pliku Excel
+#   prefix – pierwsze znaki nazwy pliku Excel (np. '03' dopasuje '03_cokolwiek.xlsx')
 #   y, z   – pozycja w przekroju [m]
 #   color  – kolor (hex lub nazwa matplotlib)
 SENSORS = {
     '03': {
-        'file':  '03_S10_do_S00.xlsx',
+        'prefix': '03',
         'y':     -0.05,
         'z':     -0.12,
         'color': '#f38ba8',
     },
     '04': {
-        'file':  '04_S10_do_S01.xlsx',
+        'prefix': '04',
         'y':      0.05,
         'z':      0.08,
         'color': '#a6e3a1',
@@ -98,6 +100,26 @@ SCALE_INIT_MULT = 1.0
 N_PTS = 300
 
 # ═══════════════════════════════════════════════════════════════════════════════
+
+
+# ── Wyszukiwanie plików ───────────────────────────────────────────────────────
+
+def find_file(prefix: str, search_dir: str = '.') -> str:
+    """
+    Znajduje plik Excel którego nazwa zaczyna się od podanego prefiksu.
+
+    Przeszukuje *search_dir* (domyślnie katalog roboczy).
+    Jeśli pasuje więcej niż jeden plik, zwraca alfabetycznie pierwszy.
+    Rzuca FileNotFoundError gdy nic nie pasuje.
+    """
+    pattern = os.path.join(search_dir, f'{prefix}*.xlsx')
+    matches = sorted(glob.glob(pattern))
+    if not matches:
+        raise FileNotFoundError(
+            f"Nie znaleziono pliku zaczynającego się od '{prefix}' "
+            f"w katalogu '{os.path.abspath(search_dir)}'"
+        )
+    return matches[0]
 
 
 # ── Wczytywanie danych ────────────────────────────────────────────────────────
@@ -281,8 +303,11 @@ def set_axes_style(ax: Axes3D, verts_yz: list) -> None:
 # ── Aplikacja ─────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    # Wczytaj dane ze wszystkich czujników
-    sensor_data = {sid: load_sensor(cfg['file']) for sid, cfg in SENSORS.items()}
+    # Wczytaj dane ze wszystkich czujników (wyszukiwanie po prefiksie)
+    sensor_data = {
+        sid: load_sensor(find_file(cfg['prefix']))
+        for sid, cfg in SENSORS.items()
+    }
 
     # Nazwy pomiarów z pierwszego czujnika (zakładamy tę samą kolejność)
     first_sid   = next(iter(sensor_data))
