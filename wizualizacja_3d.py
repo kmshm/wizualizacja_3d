@@ -41,16 +41,34 @@ BEAM_L = 6.0
 #   (półka górna 150 mm + środnik 600 mm)
 #
 # ── Przekrój dwuteowy ze skosami (pachwinami) ─────────────────────────────
+#
+#  Wymiary:
+#    szerokość półki górnej : 800 mm  (Y: -400 … +400)
+#    wysokość półki górnej  : 150 mm  (Z: +225 … +375)
+#    wysokość środnika      : 600 mm  (Z: -375 … +225)
+#    szerokość środnika     : 300 mm  (Y: -150 … +150)
+#    skosy (pachwiny)       : od (±150, +050) do (±400, +225)
+#
+#   Y:  -0.400  -0.150          +0.150  +0.400
+#        │       │                │       │
+# +0.375 ├───────┴────────────────┴───────┤  ← szczyt półki
+#        │           półka górna          │
+# +0.225 ├───────┐                ┌───────┤  ← spód półki
+#        │skos   │                │  skos │
+# +0.050 │       ├────────────────┤       │  ← góra środnika
+#        │       │    środnik     │       │
+# -0.375 │       ├────────────────┤       │  ← dół środnika
+#        (nieużywane węzły po bokach)
+#
 CROSS_SECTION = [
-    # Dolna krawędź środnika (szersza)           W = 300 mm, Z = -375 mm
-    (-0.150, -0.375),
-    ( 0.150, -0.375),
-    # Skosy prowadzą w górę i na zewnątrz do spodu półki górnej
-    ( 0.400,  0.225),   # prawy narożnik spodu półki (Y=400, Z=+225)
-    ( 0.400,  0.375),   # prawy narożnik szczytu
-    (-0.400,  0.375),   # lewy narożnik szczytu
-    (-0.400,  0.225),   # lewy narożnik spodu półki
-    # Skosy z powrotem do środnika
+    (-0.150, -0.375),   # dół-lewy środnika
+    ( 0.150, -0.375),   # dół-prawy środnika
+    ( 0.150,  0.050),   # góra-prawy środnika (koniec prostego odcinka)
+    ( 0.400,  0.225),   # spód-prawy półki (po skosie)
+    ( 0.400,  0.375),   # szczyt-prawy
+    (-0.400,  0.375),   # szczyt-lewy
+    (-0.400,  0.225),   # spód-lewy półki (po skosie)
+    (-0.150,  0.050),   # góra-lewy środnika (koniec prostego odcinka)
 ]
 #
 # ── Prostokąt ─────────────────────────────────────────────────────────────
