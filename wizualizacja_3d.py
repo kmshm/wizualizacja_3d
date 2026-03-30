@@ -332,8 +332,6 @@ def main() -> None:
     for lbl in radio.labels:
         lbl.set_color('#cdd6f4')
         lbl.set_fontsize(8)
-    for circ in radio.circles:
-        circ.set_radius(0.06)
 
     # Suwak skali — dół okna
     ax_sl  = fig.add_axes([0.08, 0.040, 0.58, 0.025])
